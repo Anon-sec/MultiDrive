@@ -134,3 +134,9 @@ scripts/build.ps1   installer/MultiDriveCloud.iss   docs/   config/
 Logiciel libre sous licence **MIT** : utilisation, modification, redistribution et même vente sont autorisées, à condition de conserver la mention de copyright. Voir [LICENSE.md](LICENSE.md).
 Composants tiers : [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). Pour contribuer : [CONTRIBUTING.md](CONTRIBUTING.md).
 Remplacez [YOUR NAME OR HANDLE] dans LICENSE.md par votre nom avant de publier.
+
+## Contacte 
+contacte.anon-sec@proton.me
+
+## Donation
+LTC Adresse : Li2vH3URmSW5JXj1gbGDMtDqKSn27xvG42
