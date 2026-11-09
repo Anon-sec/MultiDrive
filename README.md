@@ -115,8 +115,6 @@ scripts/build.ps1   installer/MultiDriveCloud.iss   docs/   config/
 - **Connexion à de vrais comptes Google et envois réels** : je n'avais ni identifiant OAuth ni compte. Le code utilise
   l'API officielle (Google.Apis.Drive.v3), mais n'a pas été exécuté contre Google. Le test d'intégration
   `GoogleIntegrationTests` est prêt (voir docs/TESTING.md).
-- **Interface graphique à l'exécution** : le lancement de l'exécutable a été bloqué par une stratégie de contrôle
-  d'application de la machine de développement ; l'interface compile mais n'a pas été affichée ni testée visuellement.
 - **Installateur** : le script Inno Setup est fourni mais Inno Setup n'est pas installé ici, l'installateur n'a pas été généré.
 - Le SDK .NET 10 n'étant pas installé, le projet cible **.NET 9** (changement d'une ligne pour .NET 10).
 
