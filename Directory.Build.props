@@ -1,0 +1,15 @@
+﻿<Project>
+  <PropertyGroup>
+    <MdcTfm>net9.0</MdcTfm>
+    <TargetFramework>$(MdcTfm)</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <Version>1.0.0</Version>
+    <Company>MultiDrive Cloud</Company>
+    <Product>MultiDrive Cloud</Product>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <NuGetAudit>false</NuGetAudit>
+  </PropertyGroup>
+</Project>

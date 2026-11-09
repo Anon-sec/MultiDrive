@@ -1,0 +1,49 @@
+<Window x:Class="MultiDriveCloud.App.Views.PropertiesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Propriétés" Width="600" Height="560" WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
+        Background="{DynamicResource BgBrush}" FontFamily="{StaticResource UiFont}">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock x:Name="NameText" Style="{StaticResource SectionTitle}" FontSize="18" TextTrimming="CharacterEllipsis"/>
+        <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,14,0,14">
+            <Grid x:Name="Details">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+            </Grid>
+        </Border>
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Répartition technique (visible uniquement ici)" Style="{StaticResource MutedText}" Margin="0,0,0,6"/>
+            <ListBox x:Name="Fragments" Grid.Row="1" Style="{StaticResource FlatList}" ItemContainerStyle="{StaticResource FlatListItem}" SelectionMode="Single">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="90"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="90"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding Index}" Style="{StaticResource MutedText}"/>
+                            <TextBlock Grid.Column="1" Text="{Binding Size, Converter={StaticResource BytesConv}}"/>
+                            <TextBlock Grid.Column="2" Text="{Binding AccountEmail}" TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Grid.Column="3" Text="{Binding Status}" Style="{StaticResource MutedText}"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+        <Button Grid.Row="3" Content="Fermer" HorizontalAlignment="Right" MinWidth="90" Margin="0,14,0,0" IsCancel="True" Click="Close_Click"/>
+    </Grid>
+</Window>

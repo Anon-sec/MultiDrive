@@ -1,0 +1,142 @@
+<UserControl x:Class="MultiDriveCloud.App.Views.TransfersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="30,26,30,22">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <TextBlock Text="Transferts" Style="{StaticResource PageTitle}"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Button Content="Tout mettre en pause" Command="{Binding PauseAllCommand}" Margin="0,0,8,0"/>
+                <Button Content="Tout reprendre" Command="{Binding ResumeAllCommand}" Margin="0,0,8,0"/>
+                <Button Content="Effacer les terminés" Command="{Binding ClearFinishedCommand}"/>
+            </StackPanel>
+        </Grid>
+
+        <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,16,0,14" Padding="18,14">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="{Binding SummaryText}"/>
+                    <ProgressBar Value="{Binding GlobalProgress}" Margin="0,10,24,0"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <StackPanel Margin="0,0,24,0">
+                        <TextBlock Text="Vitesse" Style="{StaticResource MutedText}" FontSize="11"/>
+                        <TextBlock Text="{Binding SpeedText}" FontWeight="SemiBold" FontSize="15"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Temps restant" Style="{StaticResource MutedText}" FontSize="11"/>
+                        <TextBlock Text="{Binding RemainingText}" FontWeight="SemiBold" FontSize="15"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="2">
+            <ListBox Style="{StaticResource FlatList}" ItemContainerStyle="{StaticResource FlatListItem}" ItemsSource="{Binding Items}" SelectionMode="Single"
+                     HorizontalContentAlignment="Stretch">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource Card}" Padding="16,12" Margin="0,0,6,0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding DirectionIcon}" Style="{StaticResource IconText}" Foreground="{DynamicResource AccentBrush}" Margin="0,0,12,0" ToolTip="{Binding DirectionText}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Style="{StaticResource MutedText}" FontSize="11" TextTrimming="CharacterEllipsis">
+                                            <Run Text="{Binding DirectionText, Mode=OneWay}"/>
+                                            <Run Text="{Binding Destination, Mode=OneWay, StringFormat=' · {0}'}"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0">
+                                        <Ellipse Style="{StaticResource StatusDot}" Tag="{Binding StateKind}" Margin="0,1,6,0"/>
+                                        <TextBlock Text="{Binding StateText}" Style="{StaticResource StatusText}" Tag="{Binding StateKind}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3" Orientation="Horizontal">
+                                        <Button Content="&#xE769;" Style="{StaticResource IconButton}" ToolTip="Pause" Visibility="{Binding CanPause, Converter={StaticResource BoolToVis}}"
+                                                Command="{Binding DataContext.PauseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                                        <Button Content="&#xE768;" Style="{StaticResource IconButton}" ToolTip="Reprendre / réessayer" Visibility="{Binding CanResume, Converter={StaticResource BoolToVis}}"
+                                                Command="{Binding DataContext.ResumeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                                        <Button Content="&#xE711;" Style="{StaticResource IconButton}" ToolTip="Annuler" Visibility="{Binding CanCancel, Converter={StaticResource BoolToVis}}"
+                                                Command="{Binding DataContext.CancelCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                                        <Button Content="&#xE838;" Style="{StaticResource IconButton}" ToolTip="Afficher dans l'explorateur Windows" Visibility="{Binding IsFinished, Converter={StaticResource BoolToVis}}"
+                                                Command="{Binding DataContext.ShowInFolderCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                                    </StackPanel>
+                                </Grid>
+                                <ProgressBar Grid.Row="1" Margin="0,10,0,0" Value="{Binding Progress}" IsIndeterminate="{Binding IsIndeterminate}"
+                                             Style="{StaticResource StatusBar}" Tag="{Binding StateKind}"/>
+                                <Grid Grid.Row="2" Margin="0,6,0,0">
+                                    <TextBlock Style="{StaticResource MutedText}" FontSize="12">
+                                        <Run Text="{Binding SizeText, Mode=OneWay}"/>
+                                        <Run Text="{Binding ProgressText, Mode=OneWay, StringFormat=' · {0}'}"/>
+                                        <Run Text="{Binding Retries, Mode=OneWay, StringFormat=' · {0} nouvelle(s) tentative(s)'}"/>
+                                    </TextBlock>
+                                    <TextBlock Style="{StaticResource MutedText}" FontSize="12" HorizontalAlignment="Right">
+                                        <Run Text="{Binding SpeedText, Mode=OneWay}"/>
+                                        <Run Text="{Binding RemainingText, Mode=OneWay, StringFormat=' · {0}'}"/>
+                                    </TextBlock>
+                                </Grid>
+                                <TextBlock Grid.Row="3" Text="{Binding Error}" TextWrapping="Wrap" Foreground="{DynamicResource DangerBrush}" FontSize="12" Margin="0,8,0,0"
+                                           Visibility="{Binding Error, Converter={StaticResource NullToVis}}"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVis}}" IsHitTestVisible="False">
+                <TextBlock Text="&#xE8AB;" Style="{StaticResource IconText}" FontSize="40" Foreground="{DynamicResource MutedBrush}"/>
+                <TextBlock Text="Aucun transfert" FontSize="15" Margin="0,12,0,0" HorizontalAlignment="Center"/>
+                <TextBlock Text="Les envois et téléchargements apparaîtront ici en temps réel." Style="{StaticResource MutedText}" Margin="0,4,0,0"/>
+            </StackPanel>
+        </Grid>
+
+        <Expander Grid.Row="3" Margin="0,14,0,0" Header="Journal des erreurs" Foreground="{DynamicResource TextBrush}"
+                  Visibility="{Binding HasErrors, Converter={StaticResource BoolToVis}}">
+            <Border Style="{StaticResource Card}" Padding="12" Margin="0,8,0,0" MaxHeight="190">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <ListBox Style="{StaticResource FlatList}" ItemsSource="{Binding Errors}" SelectionMode="Single">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock TextWrapping="Wrap" FontSize="12" Margin="0,2">
+                                    <Run Text="{Binding TimeText, Mode=OneWay}" Foreground="{DynamicResource MutedBrush}"/>
+                                    <Run Text="{Binding Name, Mode=OneWay}" FontWeight="SemiBold"/>
+                                    <Run Text="{Binding Message, Mode=OneWay}" Foreground="{DynamicResource DangerBrush}"/>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,8,0,0">
+                        <Button Content="Ouvrir le dossier des journaux" Command="{Binding OpenLogsCommand}" Margin="0,0,8,0"/>
+                        <Button Content="Vider" Command="{Binding ClearErrorsCommand}"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Expander>
+    </Grid>
+</UserControl>

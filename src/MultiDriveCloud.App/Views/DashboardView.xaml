@@ -1,0 +1,123 @@
+<UserControl x:Class="MultiDriveCloud.App.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="36,30,36,36">
+            <TextBlock Text="Tableau de bord" Style="{StaticResource PageTitle}"/>
+            <TextBlock Text="Vos comptes Google Drive réunis en un seul espace de stockage." Style="{StaticResource MutedText}" Margin="0,4,0,0"/>
+
+            <Border Style="{StaticResource Card}" Margin="0,24,0,0" Padding="24"
+                    Visibility="{Binding HasAccounts, Converter={StaticResource BoolToVis}, ConverterParameter=invert}">
+                <StackPanel>
+                    <TextBlock Text="Commencez par connecter vos comptes Google" Style="{StaticResource SectionTitle}"/>
+                    <TextBlock Style="{StaticResource MutedText}" TextWrapping="Wrap" Margin="0,8,0,16" MaxWidth="640"
+                               Text="Ajoutez au moins deux comptes pour répartir automatiquement vos fichiers. L'authentification se fait dans votre navigateur sur le site officiel de Google : MultiDrive Cloud ne voit jamais vos mots de passe."/>
+                    <Button Content="Ajouter un compte Google" Style="{StaticResource AccentButton}" HorizontalAlignment="Left" Command="{Binding GoToAccountsCommand}"/>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}" Margin="0,24,0,0" Padding="24">
+                <StackPanel>
+                    <Grid>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding FreeText}" FontSize="34" FontWeight="SemiBold"/>
+                            <TextBlock Text=" libres" FontSize="16" Style="{StaticResource MutedText}" VerticalAlignment="Bottom" Margin="4,0,0,6"/>
+                        </StackPanel>
+                        <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                            <TextBlock Style="{StaticResource MutedText}" HorizontalAlignment="Right">
+                                <Run Text="Capacité totale"/> <Run Text="{Binding TotalText, Mode=OneWay}" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}"/>
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource MutedText}" HorizontalAlignment="Right" FontSize="12">
+                                <Run Text="Utilisable après marge de sécurité :"/> <Run Text="{Binding UsableText, Mode=OneWay}"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Margin="0,16,0,0" Height="12">
+                        <ProgressBar Height="12" Value="{Binding UsedFraction}" Foreground="{DynamicResource MutedBrush}"/>
+                        <ProgressBar Height="12" Value="{Binding AppFraction}" Background="Transparent"/>
+                    </Grid>
+                    <WrapPanel Margin="0,14,0,0">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,28,0">
+                            <Ellipse Width="9" Height="9" Fill="{DynamicResource AccentBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Margin="8,0,0,0"><Run Text="MultiDrive Cloud : "/><Run Text="{Binding AppUsedText, Mode=OneWay}" FontWeight="SemiBold"/></TextBlock>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,28,0">
+                            <Ellipse Width="9" Height="9" Fill="{DynamicResource MutedBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Margin="8,0,0,0"><Run Text="Autres usages (Gmail, Photos…) : "/><Run Text="{Binding OtherUsedText, Mode=OneWay}" FontWeight="SemiBold"/></TextBlock>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="9" Height="9" Fill="{DynamicResource TrackBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Margin="8,0,0,0"><Run Text="Libre : "/><Run Text="{Binding FreeText, Mode=OneWay}" FontWeight="SemiBold"/></TextBlock>
+                        </StackPanel>
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <UniformGrid Columns="4" Margin="0,16,0,0">
+                <Border Style="{StaticResource Card}" Margin="0,0,8,0">
+                    <StackPanel>
+                        <TextBlock Text="Comptes connectés" Style="{StaticResource MutedText}"/>
+                        <TextBlock FontSize="26" FontWeight="SemiBold" Margin="0,6,0,0"><Run Text="{Binding ConnectedCount, Mode=OneWay}"/><Run Text="{Binding AccountCount, Mode=OneWay, StringFormat=' / {0}'}" FontSize="16" Foreground="{DynamicResource MutedBrush}"/></TextBlock>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="8,0,8,0">
+                    <StackPanel>
+                        <TextBlock Text="Fichiers stockés" Style="{StaticResource MutedText}"/>
+                        <TextBlock Text="{Binding FileCount}" FontSize="26" FontWeight="SemiBold" Margin="0,6,0,0"/>
+                        <TextBlock Text="{Binding FolderCount, StringFormat='{}{0} dossier(s)'}" Style="{StaticResource MutedText}" FontSize="11"/>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="8,0,8,0">
+                    <StackPanel>
+                        <TextBlock Text="Transferts actifs" Style="{StaticResource MutedText}"/>
+                        <TextBlock Text="{Binding ActiveTransfers}" FontSize="26" FontWeight="SemiBold" Margin="0,6,0,0"/>
+                        <ProgressBar Value="{Binding GlobalProgress}" Height="5" Margin="0,6,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="8,0,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Vitesse actuelle" Style="{StaticResource MutedText}"/>
+                        <TextBlock Text="{Binding SpeedText}" FontSize="26" FontWeight="SemiBold" Margin="0,6,0,0"/>
+                        <TextBlock Text="{Binding RemainingText, StringFormat='Temps restant : {0}'}" Style="{StaticResource MutedText}" FontSize="11"/>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <TextBlock Text="État des Drive" Style="{StaticResource SectionTitle}" Margin="0,28,0,10"
+                       Visibility="{Binding HasAccounts, Converter={StaticResource BoolToVis}}"/>
+            <ItemsControl ItemsSource="{Binding Cards}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource Card}" Padding="16,12" Margin="0,0,0,8">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="220"/>
+                                    <ColumnDefinition Width="160"/>
+                                </Grid.ColumnDefinitions>
+                                <Ellipse Style="{StaticResource StatusDot}" Tag="{Binding StatusKind}" Margin="0,0,12,0"/>
+                                <TextBlock Grid.Column="1" Text="{Binding Email}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="12,0">
+                                    <Grid Height="6">
+                                        <ProgressBar Height="6" Value="{Binding UsedFraction}" Foreground="{DynamicResource MutedBrush}"/>
+                                        <ProgressBar Height="6" Value="{Binding AppFraction}" Background="Transparent"/>
+                                    </Grid>
+                                </StackPanel>
+                                <StackPanel Grid.Column="3" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding FreeText}" HorizontalAlignment="Right"/>
+                                    <TextBlock Text="{Binding StatusText}" Style="{StaticResource StatusText}" Tag="{Binding StatusKind}" FontSize="11" HorizontalAlignment="Right"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <StackPanel Orientation="Horizontal" Margin="0,18,0,0" Visibility="{Binding HasAccounts, Converter={StaticResource BoolToVis}}">
+                <Button Content="Ouvrir mes fichiers" Style="{StaticResource AccentButton}" Command="{Binding GoToFilesCommand}"/>
+                <Button Content="Voir les transferts" Margin="10,0,0,0" Command="{Binding GoToTransfersCommand}"/>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

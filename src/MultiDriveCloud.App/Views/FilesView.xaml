@@ -1,0 +1,152 @@
+<UserControl x:Class="MultiDriveCloud.App.Views.FilesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="30,26,30,18">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <TextBlock Text="Fichiers" Style="{StaticResource PageTitle}"/>
+            <Grid HorizontalAlignment="Right" Width="320" VerticalAlignment="Center">
+                <TextBox x:Name="SearchBox" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Padding="34,8,32,8"/>
+                <TextBlock Text="&#xE721;" Style="{StaticResource IconText}" Foreground="{DynamicResource MutedBrush}" HorizontalAlignment="Left" Margin="12,0,0,0" FontSize="13"/>
+                <TextBlock Text="Rechercher un fichier ou dossier…" Style="{StaticResource MutedText}" Margin="35,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False">
+                    <TextBlock.Visibility>
+                        <Binding Path="Text" ElementName="SearchBox" Converter="{StaticResource NullToVis}" ConverterParameter="invert"/>
+                    </TextBlock.Visibility>
+                </TextBlock>
+                <Button Content="&#xE711;" Style="{StaticResource IconButton}" HorizontalAlignment="Right" Width="28" Height="28" Margin="0,0,3,0" FontSize="11"
+                        Command="{Binding ClearSearchCommand}" Visibility="{Binding IsSearching, Converter={StaticResource BoolToVis}}"/>
+            </Grid>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,14,0,0">
+            <Button Content="&#xE74A;" Style="{StaticResource IconButton}" ToolTip="Dossier parent" Command="{Binding GoUpCommand}" IsEnabled="{Binding CanGoUp}"/>
+            <ItemsControl ItemsSource="{Binding Breadcrumb}" VerticalAlignment="Center" Margin="4,0,0,0">
+                <ItemsControl.ItemsPanel><ItemsPanelTemplate><StackPanel Orientation="Horizontal"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE76C;" Style="{StaticResource IconText}" FontSize="9" Foreground="{DynamicResource MutedBrush}" Margin="2,0"/>
+                            <Button Content="{Binding Name}" Style="{StaticResource GhostButton}" Padding="8,4"
+                                    Command="{Binding DataContext.NavigateToCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+
+        <WrapPanel Grid.Row="2" Margin="0,10,0,12">
+            <Button Content="＋  Nouveau dossier" Margin="0,0,8,0" Command="{Binding NewFolderCommand}"/>
+            <Button Content="Importer des fichiers" Style="{StaticResource AccentButton}" Margin="0,0,8,0" Command="{Binding ImportFilesCommand}"/>
+            <Button Content="Importer un dossier" Margin="0,0,18,0" Command="{Binding ImportFolderCommand}"/>
+            <Button Content="Télécharger" Margin="0,0,8,0" Command="{Binding DownloadCommand}" IsEnabled="{Binding HasSelection}"/>
+            <Button Content="Renommer" Margin="0,0,8,0" Command="{Binding RenameCommand}" IsEnabled="{Binding HasSingleSelection}"/>
+            <Button Content="Déplacer" Margin="0,0,8,0" Command="{Binding MoveCommand}" IsEnabled="{Binding HasSelection}"/>
+            <Button Content="Supprimer" Style="{StaticResource DangerButton}" Margin="0,0,8,0" Command="{Binding DeleteCommand}" IsEnabled="{Binding HasSelection}"/>
+            <Button Content="Propriétés" Command="{Binding PropertiesCommand}" IsEnabled="{Binding HasSingleSelection}"/>
+        </WrapPanel>
+
+        <Border Grid.Row="3" Style="{StaticResource Card}" Padding="8,6,8,8" x:Name="DropZone">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid Margin="12,4,12,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="36"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="130"/>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="170"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="1" Content="Nom" Style="{StaticResource GhostButton}" HorizontalAlignment="Left" Padding="0,2" Foreground="{DynamicResource MutedBrush}"
+                            Command="{Binding SortByCommand}" CommandParameter="Name"/>
+                    <TextBlock Grid.Column="2" Text="État" Style="{StaticResource MutedText}" VerticalAlignment="Center"/>
+                    <Button Grid.Column="3" Content="Taille" Style="{StaticResource GhostButton}" HorizontalAlignment="Left" Padding="0,2" Foreground="{DynamicResource MutedBrush}"
+                            Command="{Binding SortByCommand}" CommandParameter="Size"/>
+                    <Button Grid.Column="4" Content="Modifié le" Style="{StaticResource GhostButton}" HorizontalAlignment="Left" Padding="0,2" Foreground="{DynamicResource MutedBrush}"
+                            Command="{Binding SortByCommand}" CommandParameter="Date"/>
+                </Grid>
+
+                <ListBox x:Name="List" Grid.Row="1" Style="{StaticResource FlatList}" ItemContainerStyle="{StaticResource FlatListItem}"
+                         ItemsSource="{Binding Items}" AllowDrop="True" SelectionChanged="List_SelectionChanged"
+                         MouseDoubleClick="List_MouseDoubleClick" PreviewMouseLeftButtonDown="List_PreviewMouseLeftButtonDown"
+                         PreviewMouseMove="List_PreviewMouseMove" PreviewMouseRightButtonDown="List_PreviewMouseRightButtonDown"
+                         DragEnter="List_DragOver" DragOver="List_DragOver" DragLeave="List_DragLeave" Drop="List_Drop" KeyDown="List_KeyDown">
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Télécharger" Command="{Binding DownloadCommand}" IsEnabled="{Binding HasSelection}"/>
+                            <MenuItem Header="Télécharger vers…" Command="{Binding DownloadToCommand}" IsEnabled="{Binding HasSelection}"/>
+                            <Separator/>
+                            <MenuItem Header="Renommer (F2)" Command="{Binding RenameCommand}" IsEnabled="{Binding HasSingleSelection}"/>
+                            <MenuItem Header="Déplacer vers…" Command="{Binding MoveCommand}" IsEnabled="{Binding HasSelection}"/>
+                            <MenuItem Header="Supprimer (Suppr)" Command="{Binding DeleteCommand}" IsEnabled="{Binding HasSelection}"/>
+                            <Separator/>
+                            <MenuItem Header="Propriétés" Command="{Binding PropertiesCommand}" IsEnabled="{Binding HasSingleSelection}"/>
+                            <Separator/>
+                            <MenuItem Header="Nouveau dossier" Command="{Binding NewFolderCommand}"/>
+                            <MenuItem Header="Importer des fichiers…" Command="{Binding ImportFilesCommand}"/>
+                            <MenuItem Header="Actualiser (F5)" Command="{Binding RefreshCommand}"/>
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Background="Transparent">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="36"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="110"/>
+                                    <ColumnDefinition Width="170"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding Icon}" FontSize="19" HorizontalAlignment="Left">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource IconText}">
+                                            <Setter Property="Foreground" Value="{DynamicResource MutedBrush}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IconKind}" Value="Folder"><Setter Property="Foreground" Value="{DynamicResource WarningBrush}"/></DataTrigger>
+                                                <DataTrigger Binding="{Binding IconKind}" Value="Pending"><Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/></DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="{Binding SubText}" Style="{StaticResource MutedText}" FontSize="11" TextTrimming="CharacterEllipsis"
+                                               Visibility="{Binding SubText, Converter={StaticResource NullToVis}}"/>
+                                </StackPanel>
+                                <TextBlock Grid.Column="2" Text="{Binding StatusText}" Style="{StaticResource MutedText}" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="3" Text="{Binding SizeText}" Style="{StaticResource MutedText}" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="4" Text="{Binding ModifiedText}" Style="{StaticResource MutedText}" VerticalAlignment="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"
+                            Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="&#xE898;" Style="{StaticResource IconText}" FontSize="40" Foreground="{DynamicResource MutedBrush}"/>
+                    <TextBlock Text="Glissez-déposez des fichiers ou des dossiers ici" Margin="0,12,0,0" FontSize="15" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Ils seront répartis automatiquement entre vos comptes Google Drive." Style="{StaticResource MutedText}" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <Border x:Name="DropOverlay" Grid.RowSpan="2" Visibility="Collapsed" CornerRadius="8" BorderThickness="2" BorderBrush="{DynamicResource AccentBrush}"
+                        Background="{DynamicResource SelectedBrush}" Opacity="0.92" IsHitTestVisible="False">
+                    <TextBlock x:Name="DropText" Text="Déposez pour importer" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="4" Margin="2,10,2,0">
+            <TextBlock Text="{Binding SummaryText}" Style="{StaticResource MutedText}"/>
+            <TextBlock Text="{Binding SelectionText}" HorizontalAlignment="Right"/>
+        </Grid>
+    </Grid>
+</UserControl>
